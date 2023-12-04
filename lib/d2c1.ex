@@ -1,7 +1,10 @@
 defmodule D2C1 do
-  def digest_file(filepath) do
-    File.read!(filepath)
-      |> String.split("\n", trim: true)
+  alias Utils.Parser
+
+  def run(ext) do
+    Parser.parse("d2/#{ext}")
+    |> parse_games() |> IO.inspect(label: "")
+    |> Enum.map(&select_highest_colors(&1))
   end
 
   def parse_games(games) do
@@ -15,22 +18,30 @@ defmodule D2C1 do
         |> Integer.parse()
 
       rounds = results_string
-        |> String.split(";")
-        |> Enum.map(&String.trim/1)
-        |> Enum.reduce(%{id: id}, fn round, acc ->
-          round_results = String.split(round, ",")
-          Enum.reduce(round_results, acc, fn res, tmp ->
-            [num, color] = String.split(res, " ")
-            Map.put(tmp, String.to_atom(color), num)
+      |> String.split(";")
+      |> Enum.reduce([], fn round, acc ->
+        round_results = round
+          |> String.split(",")
+          |> Enum.map(&String.trim/1)
+          |> Enum.map(fn datum ->
+            [num_string, color] = String.split(datum, " ")
+            {num, _} = Integer.parse(num_string)
+            {num, color}
           end)
-        end)
-        |> IO.inspect(label: "rounds")
+        acc ++ round_results
+      end)
+      {id, rounds}
     end)
   end
 
-  def run do
-    digest_file("lib/2023/data/d2/example.txt")
-    |> parse_games()
+  def select_highest_colors({_id, data}) do
+    Enum.reduce(data, %{}, fn {num, color}, acc ->
+      IO.inspect(acc, label: "acc")
+      if Map.get(acc, color, 0) < num do
+        Map.put(acc, color, num)
+      else
+        acc
+      end
+    end)
   end
-
 end

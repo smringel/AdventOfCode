@@ -23,5 +23,5 @@ Run via console with
 ```
 iex -S mix run
 
-<module_name>.run filepath
+<module_name>.run("file_name")
 ```
