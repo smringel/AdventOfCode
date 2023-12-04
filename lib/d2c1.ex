@@ -3,7 +3,7 @@ defmodule D2C1 do
 
   def run(ext) do
     Parser.parse("d2/#{ext}")
-    |> parse_games() |> IO.inspect(label: "")
+    |> parse_games()
     |> Enum.map(&select_highest_colors(&1))
   end
 
@@ -36,7 +36,6 @@ defmodule D2C1 do
 
   def select_highest_colors({_id, data}) do
     Enum.reduce(data, %{}, fn {num, color}, acc ->
-      IO.inspect(acc, label: "acc")
       if Map.get(acc, color, 0) < num do
         Map.put(acc, color, num)
       else
