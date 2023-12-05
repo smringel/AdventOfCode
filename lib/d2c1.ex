@@ -1,10 +1,14 @@
 defmodule D2C1 do
   alias Utils.Parser
 
+  @zeros %{"green" => 0, "blue" => 0, "red" => 0}
+
   def run(ext) do
     Parser.parse("d2/#{ext}")
     |> parse_games()
     |> Enum.map(&select_highest_colors(&1))
+    |> filter_possible_games()
+    |> sum_ids()
   end
 
   def parse_games(games) do
@@ -13,7 +17,7 @@ defmodule D2C1 do
         |> String.split(":")
 
       {id, _} = id_string
-        |> String.graphemes()
+        |> String.split(" ")
         |> List.last()
         |> Integer.parse()
 
@@ -34,13 +38,27 @@ defmodule D2C1 do
     end)
   end
 
-  def select_highest_colors({_id, data}) do
-    Enum.reduce(data, %{}, fn {num, color}, acc ->
+  def select_highest_colors({id, data}) do
+    highest_colors = data
+    |> Enum.reduce(@zeros, fn {num, color}, acc ->
       if Map.get(acc, color, 0) < num do
         Map.put(acc, color, num)
       else
         acc
       end
     end)
+    {id, highest_colors}
+  end
+
+  def filter_possible_games(games) do
+    Enum.filter(games, fn {_id, scores} ->
+      scores["blue"] <= 14 and
+      scores["green"] <= 13 and
+      scores["red"] <= 12
+    end)
+  end
+
+  def sum_ids(games) do
+    Enum.reduce(games, 0, fn {id, _game}, acc -> acc + id end)
   end
 end
