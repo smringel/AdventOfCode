@@ -25,13 +25,15 @@ defmodule D1 do
 
   def digest_file(filepath) do
     File.read!(filepath)
-      |> String.split("\n", trim: true)
+    |> String.split("\n", trim: true)
   end
 
   def supplement_num(string) do
     letters = String.graphemes(string)
+
     Enum.reduce(letters, "", fn letter, acc ->
       sub_string = acc <> letter
+
       case Enum.find(Map.keys(@num_dict), &String.contains?(sub_string, &1)) do
         nil -> sub_string
         found_key -> acc <> Map.get(@num_dict, found_key) <> letter
@@ -51,7 +53,7 @@ defmodule D1 do
   end
 
   def first_and_last(num_list) do
-    List.first(num_list) <> List.last(num_list)
+    (List.first(num_list) <> List.last(num_list))
     |> Integer.parse()
     |> elem(0)
   end

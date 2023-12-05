@@ -17,7 +17,8 @@ defmodule D2C2 do
       |> List.last()
       |> String.split(";")
       |> Enum.reduce([], fn round, acc ->
-        round_results = round
+        round_results =
+          round
           |> String.split(",")
           |> Enum.map(&String.trim/1)
           |> Enum.map(fn datum ->
@@ -25,6 +26,7 @@ defmodule D2C2 do
             {num, _} = Integer.parse(num_string)
             {num, color}
           end)
+
         acc ++ round_results
       end)
     end)
