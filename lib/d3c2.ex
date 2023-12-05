@@ -1,15 +1,14 @@
-defmodule D3C1 do
+defmodule D3C2 do
   alias Utils.Parser
 
   def run(ext) do
     data = Parser.parse("d3/#{ext}")
     max_coords = get_max_coords(data)
-    symbol_locs = find_symbols(data)
+    gear_matrix = find_gears(data)
     numbers = find_numbers(data)
-    proximal_numbers = filter_proximal_numbers(symbol_locs, numbers, max_coords)
 
-    proximal_numbers
-    |> Enum.map(& &1[:num] |> Integer.parse() |> elem(0))
+    filter_proximal_numbers(gear_matrix, numbers, max_coords)
+    |> Enum.map(fn nums -> Enum.reduce(nums, &Kernel.*/2) end)
     |> Enum.reduce(&Kernel.+/2)
   end
 
@@ -19,14 +18,9 @@ defmodule D3C1 do
     {x, y}
   end
 
-  def find_symbols(data) do
+  def find_gears(data) do
     Enum.map(data, fn row_data ->
-        Enum.map(String.graphemes(row_data), fn column_datum ->
-          case Integer.parse(column_datum) do
-            :error -> column_datum != "."
-            _ -> false
-          end
-        end)
+        Enum.map(String.graphemes(row_data), & &1 == "*")
     end)
   end
 
@@ -79,14 +73,27 @@ defmodule D3C1 do
     List.replace_at(row_acc, index, new_num)
   end
 
-  def filter_proximal_numbers(symbols, numbers, max_coords) do
-    Enum.filter(numbers, fn number ->
-      adjacency_list = build_adjacency_list(number, max_coords)
-      Enum.any?(adjacency_list, fn {x, y} ->
-        symbols
-        |> Enum.at(y)
-        |> Enum.at(x)
+  @spec filter_proximal_numbers(any, any, any) :: list
+  def filter_proximal_numbers(gear_matrix, numbers, max_coords) do
+    adjacency_lists = Enum.map(numbers, fn number ->
+      {number[:num], build_adjacency_list(number, max_coords)}
+    end)
+
+    gear_locations = get_gear_locations(gear_matrix)
+
+    Enum.reduce(gear_locations, [], fn gear, acc ->
+      proximal_numbers = Enum.filter(adjacency_lists, fn {_number, adj} ->
+        gear in adj
       end)
+      |> Enum.map(fn {num, _adj} ->
+        num |> Integer.parse() |> elem(0)
+      end)
+
+      if Enum.count(proximal_numbers) == 2 do
+        acc ++ [proximal_numbers]
+      else
+        acc
+      end
     end)
   end
 
@@ -110,5 +117,16 @@ defmodule D3C1 do
         acc
       end
     end)
+  end
+
+  def get_gear_locations(gear_matrix) do
+    Enum.with_index(gear_matrix, fn row, row_index ->
+      Enum.with_index(row, fn col, col_index ->
+        {row_index, col_index, col}
+      end)
+    end)
+    |> List.flatten()
+    |> Enum.filter(fn {_row, _col, val} -> val == true end)
+    |> Enum.map(fn {y, x, _} -> {x, y} end)
   end
 end
