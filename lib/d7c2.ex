@@ -13,6 +13,7 @@ defmodule D7C2 do
     |> Enum.map(fn {card, bet} ->
       score = card
       |> group()
+      |> add_joker_count()
       |> score()
       {card, bet, score}
     end)
@@ -66,11 +67,35 @@ defmodule D7C2 do
     |> Enum.sort_by(&length(&1), :desc)
   end
 
-  def score([[_, _, _, _, _]]), do: :five_of_kind
-  def score([[_, _, _, _], [_]]), do: :four_of_kind
-  def score([[_, _, _], [_, _]]), do: :full
-  def score([[_, _, _], [_], [_]]), do: :three_of_kind
-  def score([[_, _], [_, _] | _]), do: :two_pair
-  def score([[_, _] | _]), do: :pair
-  def score(_), do: :card
+  def add_joker_count(cards) do
+    cards
+    |> List.flatten()
+    |> Enum.count(& &1 == "J")
+    |> then(&{cards, &1})
+  end
+
+  def score({[[_, _, _, _, _]], _}), do: :five_of_kind
+
+  def score({[[_, _, _, _], [_]], 1}), do: :five_of_kind
+  def score({[[_, _, _, _], [_]], 4}), do: :five_of_kind
+  def score({[[_, _, _, _], [_]], _}), do: :four_of_kind
+
+  def score({[[_, _, _], [_, _]], 2}), do: :five_of_kind
+  def score({[[_, _, _], [_, _]], 3}), do: :five_of_kind
+  def score({[[_, _, _], [_, _]], _}), do: :full
+
+  def score({[[_, _, _], [_], [_]], 1}), do: :four_of_kind
+  def score({[[_, _, _], [_], [_]], 3}), do: :four_of_kind
+  def score({[[_, _, _], [_], [_]], _}), do: :three_of_kind
+
+  def score({[[_, _], [_, _], [_]], 2}), do: :four_of_kind
+  def score({[[_, _], [_, _], [_]], 1}), do: :full
+  def score({[[_, _], [_, _], [_]], _}), do: :two_pair
+
+  def score({[[_, _] | _], 1}), do: :three_of_kind
+  def score({[[_, _] | _], 2}), do: :three_of_kind
+  def score({[[_, _] | _], _}), do: :pair
+
+  def score({_, 1}), do: :pair
+  def score({_, _}), do: :card
 end
