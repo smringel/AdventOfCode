@@ -3,12 +3,15 @@ defmodule D6C2 do
 
   def run(ext) do
     [time_string, distance_string] = Parser.parse("d6/#{ext}")
-    distance = parse_vals(distance_string) |> IO.inspect(label: "a")
-    time = parse_vals(time_string) |> IO.inspect(label: "b")
+    distance = parse_vals(distance_string)
+    time = parse_vals(time_string)
 
-    min_charge_time = distance / time |> :math.floor()
-    failing_runs = round(min_charge_time * 2 + 1)
-    time - failing_runs
+    #d = (t-x)t => t^2 - xt - d = 0
+    #quadratic: (t +- sqrt(t^2 - 4x))/2
+    #Distance between intersections
+    #  = t/2 + sqrt(t^2 - 4x)/2 - t/2 + sqrt(t^2 - 4x)/2
+    #  = sqrt(t^2 - 4x)
+    :math.floor(:math.sqrt(:math.pow(time, 2) - 4 * distance))
   end
 
   def parse_vals(string) do
