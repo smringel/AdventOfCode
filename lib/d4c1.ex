@@ -32,7 +32,7 @@ defmodule D4C1 do
   end
 
   def point_cards([winning, nums]) do
-    Enum.count(nums, & &1 in winning)
+    Enum.count(nums, &(&1 in winning))
     |> then(&:math.pow(2, &1 - 1))
     |> Kernel.trunc()
   end

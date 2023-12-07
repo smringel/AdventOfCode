@@ -2,29 +2,33 @@ defmodule D4C2 do
   alias Utils.Parser
 
   def run(ext) do
-    cards = Parser.parse("d4/#{ext}")
-    |> parse_cards()
-    |> Enum.map(&convert_to_numbers/1)
+    cards =
+      Parser.parse("d4/#{ext}")
+      |> parse_cards()
+      |> Enum.map(&convert_to_numbers/1)
 
-    initial_cards = Enum.reduce(1..length(cards), %{}, fn x, acc ->
-      card = Integer.to_string(x)
-      Map.put(acc, card, 1)
-    end)
+    initial_cards =
+      Enum.reduce(1..length(cards), %{}, fn x, acc ->
+        card = Integer.to_string(x)
+        Map.put(acc, card, 1)
+      end)
 
     Enum.reduce(cards, %{cur: 1, cards: initial_cards}, fn card, acc ->
       matches = point_card(card)
-      num_cur = acc[:cur]
-      |> Integer.to_string()
-      |> then(&Map.get(acc[:cards], &1))
+
+      num_cur =
+        acc[:cur]
+        |> Integer.to_string()
+        |> then(&Map.get(acc[:cards], &1))
 
       if matches > 0 do
-      updated_cards =
-        Enum.reduce(1..matches, acc[:cards], fn x, new_acc ->
-          card_to_copy = Integer.to_string(x + acc[:cur])
-          Map.put(new_acc, card_to_copy, new_acc[card_to_copy] + num_cur)
-        end)
+        updated_cards =
+          Enum.reduce(1..matches, acc[:cards], fn x, new_acc ->
+            card_to_copy = Integer.to_string(x + acc[:cur])
+            Map.put(new_acc, card_to_copy, new_acc[card_to_copy] + num_cur)
+          end)
 
-      %{cur: acc[:cur] + 1, cards: updated_cards}
+        %{cur: acc[:cur] + 1, cards: updated_cards}
       else
         %{acc | cur: acc[:cur] + 1}
       end
@@ -57,6 +61,6 @@ defmodule D4C2 do
   end
 
   def point_card([winning, nums]) do
-    Enum.count(nums, & &1 in winning)
+    Enum.count(nums, &(&1 in winning))
   end
 end
