@@ -10,18 +10,20 @@ defmodule D7C1 do
       [hand, bid_string] = String.split(string, " ")
       acc ++ [{hand, Parser.get_int(bid_string)}]
     end)
-    |> Enum.map(fn {card, bet} ->
-      score = card
-      |> group()
-      |> score()
-      {card, bet, score}
-    end)
+    |> Enum.map(&get_score_type/1)
     |> Enum.sort(&stronger_hand?/2)
     |> Enum.reverse()
     |> Enum.with_index(fn {_, bet, _}, index -> {bet, index + 1} end)
     |> Enum.reduce(0, fn {bet, rank}, acc ->
       acc + (bet * rank)
     end)
+  end
+
+  def get_score_type({card, bet}) do
+    score = card
+      |> group()
+      |> score()
+      {card, bet, score}
   end
 
   def stronger_hand?({xhand, _, x}, {yhand, _, y}) do
@@ -40,7 +42,6 @@ defmodule D7C1 do
     compare_cards(x_cards, y_cards)
   end
 
-  def compare_cards([x], [y]), do: stronger_card?(x, y)
   def compare_cards([x | x_tl], [y | y_tl]) do
     case stronger_card?(x, y) do
       :eq -> compare_cards(x_tl, y_tl)
