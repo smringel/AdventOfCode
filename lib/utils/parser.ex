@@ -8,4 +8,6 @@ defmodule Utils.Parser do
   end
 
   def check_int(string), do: string in @integers
+
+  def get_int(string), do: Integer.parse(string) |> elem(0)
 end
