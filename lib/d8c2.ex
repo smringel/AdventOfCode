@@ -8,8 +8,7 @@ defmodule D8C2 do
     starting_nodes = Enum.filter(nodes, fn {node, _l, _r} ->
       String.last(node) == "A"
     end)
-
-    traverse_nodes(directions, nodes, starting_nodes, 0)
+    Enum.map(starting_nodes, &traverse_nodes(directions, nodes, &1, 0))
   end
 
   def parse_nodes(nodes) do
@@ -23,23 +22,23 @@ defmodule D8C2 do
     end)
   end
 
-  def traverse_nodes(directions, nodes, cur_nodes, steps) do
-    cur_nodes
-      |> Enum.all?(fn {node, _l, _r} -> String.last(node) == "Z" end)
-      |> if do
-        steps
-      else
-        [dir | tl_dirs] = directions
-        next_directions = tl_dirs ++ [dir]
-        next_nodes = Enum.map(cur_nodes, &traverse_node(&1, nodes, dir))
-        traverse_nodes(next_directions, nodes, next_nodes, steps + 1)
-      end
+  def traverse_nodes(directions, nodes, cur_node, steps) do
+    {node, l, r} = cur_node
+    if String.last(node) == "Z" do
+      steps
+    else
+
+      [dir | tl_dirs] = directions
+      next_directions = tl_dirs ++ [dir]
+
+      next =
+        if dir == "L" do
+          l
+        else
+          r
+        end
+      next_node = Enum.find(nodes, fn {node, _l, _r} -> node == next end)
+      traverse_nodes(next_directions, nodes, next_node, steps + 1)
     end
-
-  def traverse_node(cur_node, nodes, dir) do
-    {_node, l, r} = cur_node
-    next_node = if dir == "L", do: l, else: r
-
-    Enum.find(nodes, fn {node, _l, _r} -> node == next_node end)
   end
 end
