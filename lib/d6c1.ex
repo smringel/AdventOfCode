@@ -30,7 +30,7 @@ defmodule D6C1 do
 
   def count_winners(outcomes, distances) do
     Enum.reduce(0..(length(outcomes) - 1), [], fn x, acc ->
-      acc ++ [Enum.count(Enum.at(outcomes, x), & &1 > Enum.at(distances, x))]
+      acc ++ [Enum.count(Enum.at(outcomes, x), &(&1 > Enum.at(distances, x)))]
     end)
   end
 end

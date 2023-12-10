@@ -15,20 +15,23 @@ defmodule D7C1 do
     |> Enum.reverse()
     |> Enum.with_index(fn {_, bet, _}, index -> {bet, index + 1} end)
     |> Enum.reduce(0, fn {bet, rank}, acc ->
-      acc + (bet * rank)
+      acc + bet * rank
     end)
   end
 
   def get_score_type({card, bet}) do
-    score = card
+    score =
+      card
       |> group()
       |> score()
-      {card, bet, score}
+
+    {card, bet, score}
   end
 
   def stronger_hand?({xhand, _, x}, {yhand, _, y}) do
-    x_strength = Enum.find_index(@hand_strength, & &1 == x)
-    y_strength = Enum.find_index(@hand_strength, & &1 == y)
+    x_strength = Enum.find_index(@hand_strength, &(&1 == x))
+    y_strength = Enum.find_index(@hand_strength, &(&1 == y))
+
     cond do
       x_strength > y_strength -> true
       x_strength < y_strength -> false
@@ -50,8 +53,9 @@ defmodule D7C1 do
   end
 
   def stronger_card?(x, y) do
-    x_strength = Enum.find_index(@card_strength, & &1 == x)
-    y_strength = Enum.find_index(@card_strength, & &1 == y)
+    x_strength = Enum.find_index(@card_strength, &(&1 == x))
+    y_strength = Enum.find_index(@card_strength, &(&1 == y))
+
     cond do
       x_strength > y_strength -> true
       x_strength < y_strength -> false

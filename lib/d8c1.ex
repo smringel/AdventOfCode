@@ -12,15 +12,19 @@ defmodule D8C1 do
   def parse_nodes(nodes) do
     Enum.map(nodes, fn string ->
       [parent, children_string] = String.split(string, " = ")
-      [left_child, right_child] = children_string
+
+      [left_child, right_child] =
+        children_string
         |> String.split(", ")
-        |> Enum.map(&String.replace(&1, "(", "") |> String.replace(")", ""))
+        |> Enum.map(&(String.replace(&1, "(", "") |> String.replace(")", "")))
         |> List.flatten()
+
       {parent, left_child, right_child}
     end)
   end
 
   def traverse_nodes(_directions, _nodes, "ZZZ", steps), do: steps
+
   def traverse_nodes(directions, nodes, cur_node, steps) do
     {_node, l, r} = Enum.find(nodes, fn {node, _l, _r} -> node == cur_node end)
 
@@ -33,6 +37,7 @@ defmodule D8C1 do
       else
         r
       end
+
     traverse_nodes(next_directions, nodes, next_node, steps + 1)
   end
 end

@@ -6,9 +6,9 @@ defmodule D6C2 do
     distance = parse_vals(distance_string)
     time = parse_vals(time_string)
 
-    #d = (t-x)t => t^2 - xt - d = 0
-    #quadratic: (t +- sqrt(t^2 - 4x))/2
-    #Distance between intersections
+    # d = (t-x)t => t^2 - xt - d = 0
+    # quadratic: (t +- sqrt(t^2 - 4x))/2
+    # Distance between intersections
     #  = t/2 + sqrt(t^2 - 4x)/2 - t/2 + sqrt(t^2 - 4x)/2
     #  = sqrt(t^2 - 4x)
     :math.floor(:math.sqrt(:math.pow(time, 2) - 4 * distance))
