@@ -19,7 +19,7 @@ defmodule D9C2 do
     end)
   end
 
-  def sequence([a, b | tl], row_acc, acc), do: sequence([b] ++ tl, row_acc ++ [b - a], acc)
+  def sequence([a, b | tl], row_acc, acc), do: sequence([b | tl], row_acc ++ [b - a], acc)
 
   def sequence(_, row_acc, acc) do
     history_acc = acc ++ [row_acc]
