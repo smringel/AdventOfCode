@@ -59,7 +59,7 @@ defmodule D10C1 do
   def map_neighbors({x, y} = loc, {x_bound, y_bound}, map) do
     cond do
       x == 0 and y == 0 -> {1, 0, "w"}
-      x == x_bound and y == y_bound -> {x_bound - 1, 0, "e"}
+      x == x_bound - 1 and y == y_bound - 1 -> {x_bound - 1, 0, "e"}
       true ->
         {next_x, next_y, from_dir} = loc
         |> get_neighbors(x_bound, y_bound)
@@ -77,7 +77,7 @@ defmodule D10C1 do
 
   def get_neighbors(loc, x_bound, y_bound) do
     [north(loc), south(loc), east(loc), west(loc)]
-    |> Enum.filter(fn {x, y, _from_dir} -> x >= 0 and y >= 0 and x <= x_bound and y <= y_bound end)
+    |> Enum.filter(fn {x, y, _from_dir} -> x >= 0 and y >= 0 and x < x_bound and y < y_bound end)
   end
 
   def symbol({x, y}, map), do: map |> Enum.at(y) |> Enum.at(x)
