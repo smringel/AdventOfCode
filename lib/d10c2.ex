@@ -86,9 +86,9 @@ defmodule D10C2 do
   def count_enclosed(map) do
     map
     |> List.flatten()
-    |> Enum.reduce({0, nil, false}, fn val, acc ->
-      {count, entry, inside?} = acc
+    |> Enum.reduce({0, nil, false}, fn val, {count, entry, inside?} = acc ->
       case {entry, val} do
+        {entry, "."} -> if inside?, do: {count + 1, entry, inside?}, else: acc
         # Staying on same side of shape boundary
         {"F", "J"} -> {count, nil, inside?}
         {"L", "7"} -> {count, nil, inside?}
@@ -96,11 +96,7 @@ defmodule D10C2 do
         # Crossing shape boundary
         {"F", "7"} -> {count, nil, not inside?}
         {"L", "J"} -> {count, nil, not inside?}
-        {nil, "|"} -> {count, nil, not inside?}
-        {nil, "F"} -> {count, "F", not inside?}
-        {nil, "L"} -> {count, "L", not inside?}
-        # Count if internal
-        _ -> if inside?, do: {count + 1, nil, inside?}, else: acc
+        {_entry, sym} -> {count, sym, not inside?}
       end
     end)
     |> elem(0)
