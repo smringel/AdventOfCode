@@ -1,4 +1,4 @@
-defmodule D10C1 do
+defmodule D10C2 do
   alias Utils.Parser
 
   @nav_dict %{
@@ -13,7 +13,7 @@ defmodule D10C1 do
   def run(ext) do
     map = Parser.parse("d10/#{ext}")
     |> Enum.map(&String.graphemes/1)
-    start_loc = find_start(map)
+    start_loc = find_start(map) |> IO.inspect(label: "start")
     x_bound = length(Enum.at(map, 0))
     y_bound = length(map)
     starting_neighbor = map_neighbors(start_loc, {x_bound, y_bound}, map)
