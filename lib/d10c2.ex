@@ -89,11 +89,11 @@ defmodule D10C2 do
     |> Enum.reduce({0, nil, false}, fn val, acc ->
       {count, entry, inside?} = acc
       case {entry, val} do
-        # Staying on same side of path
+        # Staying on same side of shape boundary
         {"F", "J"} -> {count, nil, inside?}
         {"L", "7"} -> {count, nil, inside?}
         {_entry, "-"} -> acc
-        # Switching sides of path
+        # Crossing shape boundary
         {"F", "7"} -> {count, nil, not inside?}
         {"L", "J"} -> {count, nil, not inside?}
         {nil, "|"} -> {count, nil, not inside?}
