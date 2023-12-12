@@ -1,7 +1,7 @@
 defmodule D11C2 do
   alias Utils.Parser
 
-  @mod 999_999
+  @mod 1_000_000
 
   def run(ext) do
     data = Parser.parse("d11/#{ext}")
@@ -70,6 +70,6 @@ defmodule D11C2 do
         true -> acc
       end
     end)
-    |> Kernel.*(@mod)
+    |> Kernel.*(@mod - 1)
   end
 end
