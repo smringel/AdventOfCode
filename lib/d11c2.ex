@@ -54,8 +54,8 @@ defmodule D11C2 do
     Enum.map(galaxies, fn {x, y} ->
       gal_x = elem(galaxy, 0)
       gal_y = elem(galaxy, 1)
-      x_mod = empty_mod(x, gal_x, empty_cols) * @mod
-      y_mod = empty_mod(y, gal_y, empty_rows) * @mod
+      x_mod = empty_mod(x, gal_x, empty_cols)
+      y_mod = empty_mod(y, gal_y, empty_rows)
       abs(x - gal_x) + abs(y - gal_y) + x_mod + y_mod
     end)
     |> Enum.sum()
@@ -70,5 +70,6 @@ defmodule D11C2 do
         true -> acc
       end
     end)
+    |> Kernel.*(@mod)
   end
 end
