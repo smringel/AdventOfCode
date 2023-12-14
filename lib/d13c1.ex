@@ -4,8 +4,6 @@ defmodule D13C1 do
   def run(ext) do
     Parser.parse("d13/#{ext}", false)
     |> get_maps([])
-    # |> List.last() |> IO.inspect(label: "")
-    # |> find_reflections()
     |> Enum.map(&find_reflections(&1))
     |> Enum.sum()
   end
