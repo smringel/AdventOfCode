@@ -2,7 +2,7 @@ defmodule D14C1 do
   alias Utils.Parser
 
   def run(ext) do
-    Parser.parse("d14/#{ext}", false)
+    Parser.parse("d14/#{ext}")
     |> Enum.map(&String.graphemes/1)
     |> tilt_north()
     |> weigh()

@@ -4,7 +4,7 @@ defmodule D14C2 do
   @cycles 1_000_000_000
 
   def run(ext) do
-    Parser.parse("d14/#{ext}", false)
+    Parser.parse("d14/#{ext}")
     |> Enum.map(&String.graphemes/1)
     |> find_cycle()
     |> select_map()
