@@ -9,5 +9,10 @@ defmodule Utils.Parser do
 
   def check_int(string), do: string in @integers
 
-  def get_int(string), do: Integer.parse(string) |> elem(0)
+  def get_int(string) do
+    case Integer.parse(string) do
+      {int, _extra} -> int
+      _ -> nil
+    end
+  end
 end
