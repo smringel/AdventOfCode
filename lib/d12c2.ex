@@ -26,14 +26,19 @@ defmodule D12C2 do
         |> List.duplicate(5)
         |> List.flatten()
 
-        combinations(sequence, counts, 1)
-      end)
-      |> Enum.reduce(0, fn {:ok, total}, acc -> acc + total end)
+      combinations(sequence, counts, 1)
+    end)
+    |> Enum.reduce(0, fn {:ok, total}, acc -> acc + total end)
   end
 
   defp combinations(sequence, counts, acc, inside? \\ false)
 
-  defp combinations([sequence_head | sequence_tail] = sequence, [count_head | count_tail] = counts, acc, inside?) do
+  defp combinations(
+         [sequence_head | sequence_tail] = sequence,
+         [count_head | count_tail] = counts,
+         acc,
+         inside?
+       ) do
     case Process.get({sequence, counts}) do
       nil ->
         if length(sequence) < length(counts) do
@@ -56,16 +61,23 @@ defmodule D12C2 do
                   memoize({sequence, counts}, 0)
 
                 count_head == String.length(sequence_head) and length(sequence_tail) > 0 ->
-                  memoize({sequence, counts}, acc * combinations(tl(sequence_tail), count_tail, acc))
-                count_head == String.length(sequence_head) -> memoize({sequence, counts}, acc)
+                  memoize(
+                    {sequence, counts},
+                    acc * combinations(tl(sequence_tail), count_tail, acc)
+                  )
+
+                count_head == String.length(sequence_head) ->
+                  memoize({sequence, counts}, acc)
 
                 count_head > String.length(sequence_head) and length(sequence_tail) > 0 ->
-                  total = combinations(
-                    sequence_tail,
-                    [count_head - String.length(sequence_head) | count_tail],
-                    acc,
-                    true
-                  )
+                  total =
+                    combinations(
+                      sequence_tail,
+                      [count_head - String.length(sequence_head) | count_tail],
+                      acc,
+                      true
+                    )
+
                   memoize({sequence, counts}, total)
 
                 count_head > String.length(sequence_head) ->
@@ -78,9 +90,11 @@ defmodule D12C2 do
                   [next_chunk | rest] = sequence_tail
 
                   cond do
-                    String.contains?(next_chunk, ".") and count_head > 1 -> 0
+                    String.contains?(next_chunk, ".") and count_head > 1 ->
+                      0
 
-                    String.contains?(next_chunk, "#") and count_head == 1 -> 0
+                    String.contains?(next_chunk, "#") and count_head == 1 ->
+                      0
 
                     String.contains?(next_chunk, "?") and count_head == 1 ->
                       combinations(rest, count_tail, acc, false)

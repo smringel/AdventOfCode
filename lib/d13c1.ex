@@ -10,11 +10,14 @@ defmodule D13C1 do
 
   def get_maps(data, acc) do
     data
-    |> Enum.find_index(& &1 == "")
+    |> Enum.find_index(&(&1 == ""))
     |> case do
-      nil -> acc ++ [data]
-      index -> {map, rest} = Enum.split(data, index)
-      get_maps(Enum.drop(rest, 1), acc ++ [map])
+      nil ->
+        acc ++ [data]
+
+      index ->
+        {map, rest} = Enum.split(data, index)
+        get_maps(Enum.drop(rest, 1), acc ++ [map])
     end
   end
 
@@ -38,8 +41,9 @@ defmodule D13C1 do
   end
 
   def find_mirror(map) do
-    Enum.find(1..length(map) - 1, fn x ->
+    Enum.find(1..(length(map) - 1), fn x ->
       {above, below} = Enum.split(map, x)
+
       cond do
         length(above) > length(below) ->
           above
@@ -53,7 +57,8 @@ defmodule D13C1 do
           |> Enum.reverse()
           |> Kernel.==(above)
 
-        true -> above |> Enum.reverse() |> Kernel.==(below)
+        true ->
+          above |> Enum.reverse() |> Kernel.==(below)
       end
     end)
   end

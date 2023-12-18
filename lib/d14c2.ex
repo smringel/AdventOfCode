@@ -14,6 +14,7 @@ defmodule D14C2 do
   def find_cycle(map) do
     Enum.reduce_while(1..@cycles, {nil, nil, [map]}, fn x, {_, _, prev_maps} ->
       next = spin_cycle(List.last(prev_maps))
+
       case Enum.find_index(prev_maps, fn map -> map == next end) do
         nil -> {:cont, {nil, nil, prev_maps ++ [next]}}
         index -> {:halt, {x, index, prev_maps}}
@@ -80,7 +81,7 @@ defmodule D14C2 do
     end
   end
 
-  def tilt_row([a], acc), do: acc ++ [a] |> List.flatten() |> Enum.join()
+  def tilt_row([a], acc), do: (acc ++ [a]) |> List.flatten() |> Enum.join()
 
   def weigh(map) do
     max = length(map)
@@ -88,7 +89,7 @@ defmodule D14C2 do
     map
     |> Enum.with_index(&{max - &2, &1})
     |> Enum.reduce(0, fn {weight, row}, acc ->
-      acc + Enum.count(row, & &1 == "O") * weight
+      acc + Enum.count(row, &(&1 == "O")) * weight
     end)
   end
 

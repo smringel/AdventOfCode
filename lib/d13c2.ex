@@ -10,11 +10,14 @@ defmodule D13C2 do
 
   def get_maps(data, acc) do
     data
-    |> Enum.find_index(& &1 == "")
+    |> Enum.find_index(&(&1 == ""))
     |> case do
-      nil -> acc ++ [data]
-      index -> {map, rest} = Enum.split(data, index)
-      get_maps(Enum.drop(rest, 1), acc ++ [map])
+      nil ->
+        acc ++ [data]
+
+      index ->
+        {map, rest} = Enum.split(data, index)
+        get_maps(Enum.drop(rest, 1), acc ++ [map])
     end
   end
 
@@ -38,24 +41,27 @@ defmodule D13C2 do
   end
 
   def find_mirror(map) do
-    Enum.find(1..length(map) - 1, fn x ->
+    Enum.find(1..(length(map) - 1), fn x ->
       {above, below} = Enum.split(map, x)
+
       cond do
         length(above) > length(below) ->
-          comp_above = above
-          |> Enum.slice(-length(below)..-1)
-          |> Enum.reverse()
-          |> transform_for_comp()
+          comp_above =
+            above
+            |> Enum.slice(-length(below)..-1)
+            |> Enum.reverse()
+            |> transform_for_comp()
 
           comp_below = transform_for_comp(below)
 
           diff_count(comp_above, comp_below) == 1
 
         length(above) < length(below) ->
-          comp_below = below
-          |> Enum.take(x)
-          |> Enum.reverse()
-          |> transform_for_comp()
+          comp_below =
+            below
+            |> Enum.take(x)
+            |> Enum.reverse()
+            |> transform_for_comp()
 
           comp_above = transform_for_comp(above)
 
@@ -76,7 +82,7 @@ defmodule D13C2 do
   end
 
   def diff_count(a, b) do
-    Enum.count(0..length(a) - 1, fn i ->
+    Enum.count(0..(length(a) - 1), fn i ->
       Enum.at(a, i) != Enum.at(b, i)
     end)
   end
@@ -84,6 +90,6 @@ defmodule D13C2 do
   def transform_for_comp(map) do
     map
     |> Enum.join()
-    |> String.graphemes
+    |> String.graphemes()
   end
 end

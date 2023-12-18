@@ -32,7 +32,7 @@ defmodule D14C1 do
     end
   end
 
-  def tilt_row([a], acc), do: acc ++ [a] |> List.flatten() |> Enum.join()
+  def tilt_row([a], acc), do: (acc ++ [a]) |> List.flatten() |> Enum.join()
 
   def weigh(map) do
     max = length(map)
@@ -40,7 +40,7 @@ defmodule D14C1 do
     map
     |> Enum.with_index(&{max - &2, &1})
     |> Enum.reduce(0, fn {weight, row}, acc ->
-      acc + Enum.count(row, & &1 == "O") * weight
+      acc + Enum.count(row, &(&1 == "O")) * weight
     end)
   end
 

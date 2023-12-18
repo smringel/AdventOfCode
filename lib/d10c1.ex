@@ -11,8 +11,10 @@ defmodule D10C1 do
   }
 
   def run(ext) do
-    map = Parser.parse("d10/#{ext}")
-    |> Enum.map(&String.graphemes/1)
+    map =
+      Parser.parse("d10/#{ext}")
+      |> Enum.map(&String.graphemes/1)
+
     start_loc = find_start(map)
     x_bound = length(Enum.at(map, 0))
     y_bound = length(map)
@@ -21,18 +23,21 @@ defmodule D10C1 do
   end
 
   def find_start(map) do
-    y = Enum.find_index(map, fn row ->
-      Enum.any?(row, & &1 == "S")
-    end)
-    x = Enum.find_index(Enum.at(map, y), & &1 == "S")
+    y =
+      Enum.find_index(map, fn row ->
+        Enum.any?(row, &(&1 == "S"))
+      end)
+
+    x = Enum.find_index(Enum.at(map, y), &(&1 == "S"))
     {x, y}
   end
 
   def navigate({x, y, from_dir, sym}, count, map) do
-    next_dir = @nav_dict
-    |> Map.get(sym, [])
-    |> Enum.reject(& &1 == from_dir)
-    |> List.first()
+    next_dir =
+      @nav_dict
+      |> Map.get(sym, [])
+      |> Enum.reject(&(&1 == from_dir))
+      |> List.first()
 
     {next_x, next_y, next_from} =
       case next_dir do
@@ -58,19 +63,25 @@ defmodule D10C1 do
 
   def map_neighbors({x, y} = loc, {x_bound, y_bound}, map) do
     cond do
-      x == 0 and y == 0 -> {1, 0, "w"}
-      x == x_bound - 1 and y == y_bound - 1 -> {x_bound - 1, 0, "e"}
+      x == 0 and y == 0 ->
+        {1, 0, "w"}
+
+      x == x_bound - 1 and y == y_bound - 1 ->
+        {x_bound - 1, 0, "e"}
+
       true ->
-        {next_x, next_y, from_dir} = loc
-        |> get_neighbors(x_bound, y_bound)
-        |> Enum.filter(fn {x, y, from_dir} ->
-          {x, y}
-          |> symbol(map)
-          |> then(&Map.get(@nav_dict, &1, []))
-          |> Enum.reject(& &1 == from_dir)
-          |> then(&length(&1) == 1)
-        end)
-        |> List.first()
+        {next_x, next_y, from_dir} =
+          loc
+          |> get_neighbors(x_bound, y_bound)
+          |> Enum.filter(fn {x, y, from_dir} ->
+            {x, y}
+            |> symbol(map)
+            |> then(&Map.get(@nav_dict, &1, []))
+            |> Enum.reject(&(&1 == from_dir))
+            |> then(&(length(&1) == 1))
+          end)
+          |> List.first()
+
         {next_x, next_y, from_dir, symbol({next_x, next_y}, map)}
     end
   end

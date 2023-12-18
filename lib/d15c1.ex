@@ -5,7 +5,7 @@ defmodule D15C1 do
     Parser.parse("d15/#{ext}")
     |> List.first()
     |> String.split(",")
-    |> Enum.reduce(0, & &2 + hash(&1))
+    |> Enum.reduce(0, &(&2 + hash(&1)))
   end
 
   def hash(string) do

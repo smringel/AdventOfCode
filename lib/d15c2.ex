@@ -8,8 +8,8 @@ defmodule D15C2 do
     |> get_box_values()
     |> sort_lenses()
     |> Enum.reduce(0, fn {box, lenses}, acc ->
-        (box + 1) * calculate_power(lenses) + acc
-     end)
+      (box + 1) * calculate_power(lenses) + acc
+    end)
   end
 
   def calculate_power(lenses) do
@@ -26,6 +26,7 @@ defmodule D15C2 do
         else
           String.split(string, "=")
         end
+
       {String.to_atom(val), Parser.get_int(lens)}
     end)
   end
@@ -47,6 +48,7 @@ defmodule D15C2 do
 
   def remove_lens(box, label) do
     {_prev_lens, prev_slot} = Keyword.get(box, label, {nil, nil})
+
     if is_nil(prev_slot) do
       box
     else
