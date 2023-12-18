@@ -5,28 +5,11 @@ defmodule D16C1 do
   @vert_dirs [:n, :s]
 
   def run(ext) do
-    map =
     Parser.parse("d16/#{ext}")
     |> Enum.map(&String.graphemes/1)
-
-    visited =
-    map
-    |> trace({0, 0}, :e, [{0, 0, :e}])
-    |> Enum.map(fn {x, y, _dir} -> {x, y} end)
-    |> Enum.uniq()
-
-    Enum.reduce(0..length(map) - 1, [], fn y, acc ->
-      acc ++ [Enum.reduce(0..length(hd(map)) - 1, [], fn x, x_acc ->
-        if {x, y} in visited do
-          x_acc ++ ["#"]
-        else
-          x_acc ++ ["."]
-        end
-      end)]
-    end)
-    |> IO.inspect()
-
-    Enum.count(visited)
+    |> trace({-1, 0}, :e, [])
+    |> Enum.uniq_by(fn {x, y, _dir} -> {x, y} end)
+    |> Enum.count()
   end
 
   def trace(map, pos, dir, acc) do
