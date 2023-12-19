@@ -9,15 +9,17 @@ defmodule D16C2 do
       Parser.parse("d16/#{ext}")
       |> Enum.map(&String.graphemes/1)
 
-    horizontal_entries = Enum.reduce(0..length(map) - 1, [], fn y, acc ->
-      x_max = length(hd(map))
-      acc ++ [{{-1, y}, :e, []}, {{x_max, y}, :w, []}]
-    end)
+    horizontal_entries =
+      Enum.reduce(0..(length(map) - 1), [], fn y, acc ->
+        x_max = length(hd(map))
+        acc ++ [{{-1, y}, :e, []}, {{x_max, y}, :w, []}]
+      end)
 
-    vertical_entries = Enum.reduce(0..length(hd(map)) - 1, [], fn x, acc ->
-      y_max = length(map)
-      acc ++ [{{x, -1}, :s, []}, {{x, y_max}, :n, []}]
-    end)
+    vertical_entries =
+      Enum.reduce(0..(length(hd(map)) - 1), [], fn x, acc ->
+        y_max = length(map)
+        acc ++ [{{x, -1}, :s, []}, {{x, y_max}, :n, []}]
+      end)
 
     Task.async_stream(horizontal_entries ++ vertical_entries, fn entry ->
       entry
@@ -34,7 +36,7 @@ defmodule D16C2 do
       nil ->
         acc
 
-      {x, y}  = next_pos ->
+      {x, y} = next_pos ->
         if {x, y, dir} in acc do
           acc
         else
@@ -64,20 +66,22 @@ defmodule D16C2 do
                 |> then(&trace({next_pos, :s, &1}, map))
               end
 
-            "/" -> case dir do
-              :n -> trace({next_pos, :e, updated_acc}, map)
-              :s -> trace({next_pos, :w, updated_acc}, map)
-              :e -> trace({next_pos, :n, updated_acc}, map)
-              :w -> trace({next_pos, :s, updated_acc}, map)
-            end
+            "/" ->
+              case dir do
+                :n -> trace({next_pos, :e, updated_acc}, map)
+                :s -> trace({next_pos, :w, updated_acc}, map)
+                :e -> trace({next_pos, :n, updated_acc}, map)
+                :w -> trace({next_pos, :s, updated_acc}, map)
+              end
 
             # \
-            _ -> case dir do
-              :n -> trace({next_pos, :w, updated_acc}, map)
-              :s -> trace({next_pos, :e, updated_acc}, map)
-              :e -> trace({next_pos, :s, updated_acc}, map)
-              :w -> trace({next_pos, :n, updated_acc}, map)
-            end
+            _ ->
+              case dir do
+                :n -> trace({next_pos, :w, updated_acc}, map)
+                :s -> trace({next_pos, :e, updated_acc}, map)
+                :e -> trace({next_pos, :s, updated_acc}, map)
+                :w -> trace({next_pos, :n, updated_acc}, map)
+              end
           end
         end
     end

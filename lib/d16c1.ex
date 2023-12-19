@@ -17,7 +17,7 @@ defmodule D16C1 do
       nil ->
         acc
 
-      {x, y}  = next_pos ->
+      {x, y} = next_pos ->
         if {x, y, dir} in acc do
           acc
         else
@@ -47,20 +47,22 @@ defmodule D16C1 do
                 |> then(&trace(map, next_pos, :s, &1))
               end
 
-            "/" -> case dir do
-              :n -> trace(map, next_pos, :e, updated_acc)
-              :s -> trace(map, next_pos, :w, updated_acc)
-              :e -> trace(map, next_pos, :n, updated_acc)
-              :w -> trace(map, next_pos, :s, updated_acc)
-            end
+            "/" ->
+              case dir do
+                :n -> trace(map, next_pos, :e, updated_acc)
+                :s -> trace(map, next_pos, :w, updated_acc)
+                :e -> trace(map, next_pos, :n, updated_acc)
+                :w -> trace(map, next_pos, :s, updated_acc)
+              end
 
             # \
-            _ -> case dir do
-              :n -> trace(map, next_pos, :w, updated_acc)
-              :s -> trace(map, next_pos, :e, updated_acc)
-              :e -> trace(map, next_pos, :s, updated_acc)
-              :w -> trace(map, next_pos, :n, updated_acc)
-            end
+            _ ->
+              case dir do
+                :n -> trace(map, next_pos, :w, updated_acc)
+                :s -> trace(map, next_pos, :e, updated_acc)
+                :e -> trace(map, next_pos, :s, updated_acc)
+                :w -> trace(map, next_pos, :n, updated_acc)
+              end
           end
         end
     end

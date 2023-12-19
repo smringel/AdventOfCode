@@ -12,12 +12,13 @@ defmodule D19C2 do
     limit_ranges(rules, ranges, Map.get(rules, "in"), [])
     |> Enum.map(&Map.values/1)
     |> Enum.reduce(0, fn [{x1, x2}, {m1, m2}, {a1, a2}, {s1, s2}], acc ->
-      acc + ((x2 - x1 + 1) * (m2 - m1 + 1) * (a2 - a1 + 1) * (s2 - s1 + 1))
+      acc + (x2 - x1 + 1) * (m2 - m1 + 1) * (a2 - a1 + 1) * (s2 - s1 + 1)
     end)
   end
 
   def limit_ranges(_rules, ranges, [{_, :eq, _, "A"}], _acc), do: ranges
   def limit_ranges(_rules, _ranges, [{_, :eq, _, "R"}], _acc), do: []
+
   def limit_ranges(rules, ranges, rule_set, acc) do
     [{key, op, comp, dest} | rest] = rule_set
 
@@ -26,8 +27,10 @@ defmodule D19C2 do
     else
       {pass_ranges, fail_ranges} =
         case op do
-          :lt -> {min, max} = Map.get(ranges, key)
+          :lt ->
+            {min, max} = Map.get(ranges, key)
             updated_max = min(max, comp)
+
             if updated_max > min do
               {
                 Map.put(ranges, key, {min, updated_max - 1}),
@@ -36,8 +39,11 @@ defmodule D19C2 do
             else
               {ranges, ranges}
             end
-          :gt -> {min, max} = Map.get(ranges, key)
+
+          :gt ->
+            {min, max} = Map.get(ranges, key)
             updated_min = max(min, comp)
+
             if updated_min < max do
               {
                 Map.put(ranges, key, {updated_min + 1, max}),
@@ -52,19 +58,21 @@ defmodule D19C2 do
       pass = limit_ranges(rules, pass_ranges, Map.get(rules, dest, default), acc)
       fail = limit_ranges(rules, fail_ranges, rest, acc)
 
-      acc ++ [pass, fail] |> List.flatten()
+      (acc ++ [pass, fail]) |> List.flatten()
     end
   end
 
   def parse_rules(raw_rules) do
     Enum.reduce(raw_rules, %{}, fn string, acc ->
-      [name, rest] = string
-      |> String.replace("}", "")
-      |> String.split("{")
+      [name, rest] =
+        string
+        |> String.replace("}", "")
+        |> String.split("{")
 
-      rules = rest
-      |> String.split(",")
-      |> Enum.map(&parse_rule/1)
+      rules =
+        rest
+        |> String.split(",")
+        |> Enum.map(&parse_rule/1)
 
       Map.put(acc, name, rules)
     end)
@@ -77,12 +85,15 @@ defmodule D19C2 do
         {comp_val, <<":" <> dest>>} = Integer.parse(comp)
         key = String.to_atom(key_string)
         {key, :gt, comp_val, dest}
+
       String.contains?(string, "<") ->
         [key_string, comp] = String.split(string, "<")
         {comp_val, <<":" <> dest>>} = Integer.parse(comp)
         key = String.to_atom(key_string)
         {key, :lt, comp_val, dest}
-      true -> {nil, :eq, nil, string}
+
+      true ->
+        {nil, :eq, nil, string}
     end
   end
 end

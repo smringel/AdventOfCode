@@ -48,33 +48,28 @@ defmodule D19C1 do
 
   def parse_rules(raw_rules) do
     Enum.reduce(raw_rules, %{}, fn string, acc ->
-      [name, rest] = string
-      |> String.replace("}", "")
-      |> String.split("{")
+      [name, rest] =
+        string
+        |> String.replace("}", "")
+        |> String.split("{")
 
-      rules = rest
-      |> String.split(",")
-      |> Enum.map(&parse_rule/1)
+      rules =
+        rest
+        |> String.split(",")
+        |> Enum.map(&parse_rule/1)
 
       Map.put(acc, name, rules)
     end)
   end
 
-  def parse_rule(string) do
-    cond do
-      String.contains?(string, ">") ->
-        [key_string, comp] = String.split(string, ">")
-        {comp_val, <<":" <> dest>>} = Integer.parse(comp)
-        key = String.to_atom(key_string)
-        func = fn part -> Map.get(part, key) > comp_val end
-        {func, dest}
-      String.contains?(string, "<") ->
-        [key_string, comp] = String.split(string, "<")
-        {comp_val, <<":" <> dest>>} = Integer.parse(comp)
-        key = String.to_atom(key_string)
-        func = fn part -> Map.get(part, key) < comp_val end
-        {func, dest}
-      true -> {fn _ -> true end, string}
-    end
+  def parse_rule(<<key_string::binary-size(1), comparator::binary-size(1), rest::binary>>)
+      when comparator in [">", "<"] do
+    {comp_val, <<":" <> dest>>} = Integer.parse(rest)
+    key = String.to_atom(key_string)
+    base_func = Function.capture(Kernel, String.to_atom(comparator), 2)
+    func = &base_func.(Map.get(&1, key), comp_val)
+    {func, dest}
   end
+
+  def parse_rule(string), do: {fn _ -> true end, string}
 end
