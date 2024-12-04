@@ -1,16 +1,16 @@
-defmodule D18C2 do
+defmodule D18C1 do
   alias Utils.Parser
 
-  @dir %{"0" => :r, "1" => :d, "2" => :l, "3" => :u}
   def run(ext) do
     data =
       Parser.parse("d18/#{ext}")
       |> Enum.map(&String.split(&1, " "))
       |> Enum.map(fn
-        [_dir, _num, <<"(#", hex::binary-size(5), dir::binary-size(1), ")">>] -> {
-            @dir[dir],
-            String.to_integer(hex, 16)
-        }
+        [dir, num, _] ->
+          {
+            String.to_atom(String.downcase(dir)),
+            Parser.get_int(num)
+          }
       end)
 
     {corners, perimeter} = dig(data, {0, 0}, [], 0)
@@ -27,8 +27,8 @@ defmodule D18C2 do
     dig(rest, next, corners ++ [next], perimeter + dist)
   end
 
-  def shoelace(visited) do
-    visited
+  def shoelace(corners) do
+    corners
     |> Enum.chunk_every(2, 1, :discard)
     |> Enum.reduce(0, fn [{i1, j1}, {i2, j2}], acc ->
       acc + (i1 - i2) * (j1 + j2)
