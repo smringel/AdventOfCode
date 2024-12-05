@@ -18,7 +18,8 @@ defmodule Utils.Parser do
   def get_int(string) do
     case Integer.parse(string) do
       {int, _extra} -> int
-      _ -> nil
+      _ -> IO.puts("**PARSE FAILURE**")
+        nil
     end
   end
 end

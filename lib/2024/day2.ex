@@ -10,6 +10,8 @@ defmodule Day2 do
 
   def run_part2(file) do
     read("day2/#{file}", "2024")
+    |> compile_reports()
+    |> Enum.count(&monotonic_with_removal?(&1))
     |> then(&IO.puts(inspect(&1)))
   end
 
@@ -24,6 +26,12 @@ defmodule Day2 do
 
   defp monotonic?(list) do
     ascending?(list) or descending?(list)
+  end
+
+  defp monotonic_with_removal?(list) do
+    0..length(list)
+    |> Enum.map(&List.delete_at(list, &1))
+    |> Enum.any?(&(ascending?(&1) or descending?(&1)))
   end
 
   defp ascending?([hd, second | tl]), do: ascending?([second] ++ tl, within_limit?(second - hd))
